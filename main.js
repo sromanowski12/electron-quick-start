@@ -4,11 +4,26 @@ const {
   BrowserWindow,
   Menu
 } = require('electron');
-
+const shell = require('electron').shell
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the javascript object is garbage collected.
 let mainWindow;
+var mysql = require('mysql');
+var connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: 'Baseball33',
+  database: 'sakila'
+});
 
+connection.connect();
+
+connection.query('SELECT 1 + 1 AS solution', function (error, results, fields) {
+  if (error) throw error;
+  console.log('The solution is', results[0].solution);
+});
+
+connection.end();
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
   if (process.platform != 'darwin')
@@ -28,7 +43,7 @@ app.on('ready', function () {
   mainWindow.loadURL('file://' + __dirname + '/index.html');
 
   var application_menu = [{
-    label: 'menu1',
+    label: 'File',
     submenu: [{
         label: 'Undo',
         accelerator: 'CmdOrCtrl+Z',
@@ -44,22 +59,34 @@ app.on('ready', function () {
         }
       },
       {
-        label: 'submenu1',
-        submenu: [{
-            label: 'item1',
-            accelerator: 'CmdOrCtrl+A',
-            click: () => {
-              mainWindow.openDevTools();
-            }
-          },
-          {
-            label: 'item2',
-            accelerator: 'CmdOrCtrl+B',
-            click: () => {
-              mainWindow.closeDevTools();
-            }
-          }
-        ]
+        label: 'Exit',
+        click: () =>{
+          app.exit();
+        }
+      },
+    ]
+  },
+  {
+    label: 'GitHub',
+    click: () => {
+      shell.openExternal('https://github.com/sromanowski12')
+    }
+  },
+  {      
+    label: 'submenu1',
+    submenu: [{
+        label: 'item1',
+        accelerator: 'CmdOrCtrl+A',
+        click: () => {
+          mainWindow.openDevTools();
+        }
+      },
+      {
+        label: 'item2',
+        accelerator: 'CmdOrCtrl+B',
+        click: () => {
+          mainWindow.closeDevTools();
+        }
       }
     ]
   }];
